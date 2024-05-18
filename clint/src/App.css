@@ -1,0 +1,84 @@
+.App {
+  text-align: center;
+  padding: 20px;
+}
+
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 20px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.upload-container {
+  margin-top: 100px; /* Adjust this value if necessary to avoid overlapping with the header */
+}
+
+.main-content {
+  margin-top: 20px;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chat-input {
+  padding: 10px;
+  margin-bottom: 10px;
+  width: 300px;
+  max-width: 90%;
+}
+
+.chat-button {
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-button .fa-paper-plane {
+  margin-right: 8px;
+}
+
+.chat-response {
+  margin-top: 20px;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .header {
+      position: static;
+      margin: 20px auto;
+      font-size: 20px;
+  }
+
+  .upload-container {
+      margin-top: 20px;
+  }
+
+  .chat-input {
+      width: 90%;
+  }
+}
+
+@media (min-width: 769px) {
+  .header {
+      font-size: 24px;
+  }
+} 
+
+.upload-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 100px; /* Adjust this value if necessary to avoid overlapping with the header */
+}
+
