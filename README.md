@@ -9,7 +9,7 @@ This project is a full-stack application that allows users to upload PDF documen
 ## Technologies Used
 - **Backend**: FastAPI
 - **NLP Processing**: LangChain/LLamaIndex
-- **Frontend**: React.js
+- **Frontend**: React.j
 - **Database**: SQLite or PostgreSQL
 - **File Storage**: Local filesystem or cloud storage (e.g., AWS S3)
 
