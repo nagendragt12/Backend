@@ -3,7 +3,7 @@ import axios from 'axios';
 import './App.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';  // Importing the chat icon
-import {PlusCircleOutlined,FileOutlined} from '@ant-design/icons';
+
 function App() {
     const [file, setFile] = useState(null);
     const [fileName, setFileName] = useState('');
@@ -79,11 +79,8 @@ function App() {
                     onChange={handleFileUpload}
                 />
                 <button onClick={triggerFileInput} disabled={uploading}>
-                    {uploading ? 'Uploading...' : <> <PlusCircleOutlined /> Upload PDF
-                    </>}
+                    {uploading ? 'Uploading...' : 'Upload PDF'}
                 </button>
-               
-                    
                 
                 {fileName && <p>Uploaded File: {fileName}</p>}
             </div>
@@ -109,3 +106,5 @@ function App() {
 }
 
 export default App;
+
+

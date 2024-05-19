@@ -1,13 +1,16 @@
 import os
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, File, UploadFile, Form
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import OpenAIEmbeddings
-from langchain_community.chat_models import ChatOpenAI
+from fastapi.exceptions import HTTPException
+from PyPDF2 import PdfReader
+from langchain_community.vectorstores import FAISS  # Updated import path
+from langchain_community.embeddings import OpenAIEmbeddings  # Updated import path
+from langchain_community.chat_models.openai import ChatOpenAI  # Updated import path
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationalRetrievalChain
-from PyPDF2 import PdfReader
+from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
+import uvicorn
 
 # Set OpenAI API Key
 OPENAI_API_KEY = "APIKEYHERE"
@@ -16,18 +19,28 @@ os.environ['OPENAI_API_KEY'] = OPENAI_API_KEY
 # Initialize FastAPI app
 app = FastAPI()
 
+# Allow CORS for frontend interaction
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 vectorstore = None
 conversation_chain = None
+chat_history = []
 
-def get_pdf_text(pdf_docs):
+async def get_pdf_text(pdf_docs):
     text = ""
     for pdf in pdf_docs:
         pdf_reader = PdfReader(pdf.file)
         for page in pdf_reader.pages:
-            text += page.extract_text()
+            text += page.extract_text() or ""
     return text
 
-def get_text_chunks(text):
+async def get_text_chunks(text):
     text_splitter = CharacterTextSplitter(
         separator="\n",
         chunk_size=1000,
@@ -37,12 +50,12 @@ def get_text_chunks(text):
     chunks = text_splitter.split_text(text)
     return chunks
 
-def get_vectorstore(text_chunks):
+async def get_vectorstore(text_chunks):
     embeddings = OpenAIEmbeddings()
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
-def get_conversation_chain(vectorstore):
+async def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
     memory = ConversationBufferMemory(
         memory_key='chat_history', return_messages=True)
@@ -53,31 +66,27 @@ def get_conversation_chain(vectorstore):
     )
     return conversation_chain
 
-@app.post("/upload-pdf")
-async def upload_pdf(pdf_docs: list[UploadFile] = File(...)):
+@app.get('/')
+async def index():
+    return {'message': 'Welcome to the Document-Based Chatbot!'}
+
+@app.post('/process_documents')
+async def process_documents(pdf_docs: list[UploadFile] = File(...)):
     global vectorstore, conversation_chain
-    raw_text = get_pdf_text(pdf_docs)
-    text_chunks = get_text_chunks(raw_text)
-    vectorstore = get_vectorstore(text_chunks)
-    conversation_chain = get_conversation_chain(vectorstore)
-    return JSONResponse(content={"message": "PDFs uploaded and processed successfully"})
+    raw_text = await get_pdf_text(pdf_docs)
+    text_chunks = await get_text_chunks(raw_text)
+    vectorstore = await get_vectorstore(text_chunks)
+    conversation_chain = await get_conversation_chain(vectorstore)
+    return {'message': 'Documents processed successfully!'}
 
-@app.post("/ask-question")
-async def ask_question(user_question: str = Form(...)):
-    global conversation_chain
-
+@app.post('/chat')
+async def chat(user_question: str = Form(...)):
+    global vectorstore, conversation_chain, chat_history
     if not conversation_chain:
         raise HTTPException(status_code=400, detail="No conversation chain available. Please upload PDFs first.")
-
     response = conversation_chain({'question': user_question})
     chat_history = response['chat_history']
-
-    return JSONResponse(content={"chat_history": chat_history})
-
-@app.get("/")
-async def read_root():
-    return {"message": "Welcome to the LangChain FastAPI server"}
+    return {'message': response['answer']}
 
 if __name__ == '__main__':
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host='0.0.0.0', port=8000)

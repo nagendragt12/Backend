@@ -1,19 +1,26 @@
-.App {
-  text-align: center;
+.container {
+  max-width: 600px;
+  margin: 0 auto;
   padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
 }
 
 .header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  margin: 20px;
-  font-size: 24px;
-  font-weight: bold;
+  text-align: left;
+  margin-bottom: 20px;
+  color: #333;
 }
 
 .upload-container {
-  margin-top: 100px; /* Adjust this value if necessary to avoid overlapping with the header */
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 560px;
+}
+
+.upload-container button {
+  margin-left: 20px;
 }
 
 .main-content {
@@ -22,63 +29,40 @@
 
 .chat-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  margin-bottom: 10px;
 }
 
 .chat-input {
-  padding: 10px;
-  margin-bottom: 10px;
-  width: 300px;
-  max-width: 90%;
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
 }
 
 .chat-button {
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
-.chat-button .fa-paper-plane {
-  margin-right: 8px;
+.chat-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .chat-response {
-  margin-top: 20px;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
 }
 
 .error {
-  color: red;
+  color: #ff0000;
   margin-top: 10px;
 }
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .header {
-      position: static;
-      margin: 20px auto;
-      font-size: 20px;
-  }
-
-  .upload-container {
-      margin-top: 20px;
-  }
-
-  .chat-input {
-      width: 90%;
-  }
-}
-
-@media (min-width: 769px) {
-  .header {
-      font-size: 24px;
-  }
-} 
-
-.upload-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 100px; /* Adjust this value if necessary to avoid overlapping with the header */
-}
-
